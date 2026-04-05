@@ -56,6 +56,23 @@ export interface MissionLogEntry {
   message: string;
 }
 
+export type DetectionKind = "biological" | "terrain" | "debris" | "unknown";
+
+export interface RadarDetection {
+  id: string;
+  tick: number;
+  angle: number;
+  radius: number;
+  x: number;
+  y: number;
+  kind: DetectionKind;
+  logId: string;
+  label: string;
+  revealed: boolean;
+  revealedAtMs?: number;
+  expiresAtMs?: number;
+}
+
 export type SimulationAction =
   | "MOVE_FORWARD"
   | "ASCEND"
@@ -69,7 +86,10 @@ export type SimulationAction =
 export interface SimulationSnapshot {
   state: ProbeState;
   logs: MissionLogEntry[];
+  detections: RadarDetection[];
   latestDetection?: string;
   recommendedAction?: SimulationAction;
   disabledActions: SimulationAction[];
+  sweepAngle: number;
+  sensorTimeMs: number;
 }

@@ -27,6 +27,67 @@ body {
   background: #02060b;
 }
 
+.panel-surface {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.028), rgba(255, 255, 255, 0.01)),
+    rgba(2, 11, 20, 0.68);
+  box-shadow:
+    inset 0 1px 0 rgba(196, 239, 248, 0.075),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.018),
+    0 18px 46px rgba(0, 0, 0, 0.3);
+}
+
+.panel-surface::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(135deg, rgba(164, 234, 244, 0.08), transparent 24%),
+    linear-gradient(315deg, rgba(255, 255, 255, 0.025), transparent 28%);
+  opacity: 0.72;
+}
+
+.panel-focus {
+  box-shadow:
+    inset 0 1px 0 rgba(206, 246, 252, 0.11),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.02),
+    0 20px 52px rgba(0, 0, 0, 0.34),
+    0 0 0 1px rgba(109, 211, 226, 0.06);
+}
+
+.telemetry-tile {
+  position: relative;
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.035), rgba(255, 255, 255, 0.015)),
+    rgba(255, 255, 255, 0.04);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.055),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.012);
+}
+
+.telemetry-tile::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background: linear-gradient(180deg, rgba(168, 238, 245, 0.045), transparent 42%);
+}
+
+.telemetry-tile-active {
+  background:
+    radial-gradient(circle at top, rgba(104, 219, 232, 0.12), transparent 62%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.04), rgba(255, 255, 255, 0.012)),
+    rgba(255, 255, 255, 0.045);
+  box-shadow:
+    inset 0 1px 0 rgba(201, 243, 249, 0.085),
+    inset 0 -1px 0 rgba(255, 255, 255, 0.018),
+    0 0 26px rgba(86, 198, 214, 0.09);
+}
+
 .ocean-contours {
   background-image:
     radial-gradient(
@@ -90,6 +151,172 @@ body {
   background-position: left -8rem top -5rem, right -7rem bottom -6rem;
   opacity: 0.42;
   mix-blend-mode: screen;
+}
+
+.zone-reef {
+  --zone-accent: rgba(122, 221, 208, 0.16);
+  --zone-accent-soft: rgba(122, 221, 208, 0.07);
+  --zone-panel-edge: rgba(175, 245, 224, 0.08);
+  --zone-grid: rgba(96, 216, 206, 0.045);
+}
+
+.zone-open-water {
+  --zone-accent: rgba(113, 198, 231, 0.14);
+  --zone-accent-soft: rgba(113, 198, 231, 0.06);
+  --zone-panel-edge: rgba(177, 225, 246, 0.07);
+  --zone-grid: rgba(108, 185, 223, 0.04);
+}
+
+.zone-deep-sea {
+  --zone-accent: rgba(92, 129, 211, 0.14);
+  --zone-accent-soft: rgba(92, 129, 211, 0.055);
+  --zone-panel-edge: rgba(154, 176, 236, 0.065);
+  --zone-grid: rgba(92, 129, 211, 0.035);
+}
+
+.zone-debris-field {
+  --zone-accent: rgba(138, 156, 187, 0.14);
+  --zone-accent-soft: rgba(138, 156, 187, 0.06);
+  --zone-panel-edge: rgba(208, 217, 230, 0.055);
+  --zone-grid: rgba(138, 156, 187, 0.036);
+}
+
+.zone-atmosphere {
+  position: relative;
+}
+
+.zone-atmosphere::after {
+  content: "";
+  position: absolute;
+  inset: -0.5rem;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 18% 18%, var(--zone-accent, rgba(104, 219, 232, 0.12)), transparent 28%),
+    radial-gradient(circle at 82% 72%, var(--zone-accent-soft, rgba(104, 219, 232, 0.05)), transparent 26%);
+  opacity: 0.9;
+}
+
+.zone-panel {
+  position: relative;
+}
+
+.zone-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, var(--zone-panel-edge, rgba(202, 244, 249, 0.05)), transparent 24%),
+    radial-gradient(circle at top right, var(--zone-accent-soft, rgba(104, 219, 232, 0.05)), transparent 34%);
+  opacity: 0.9;
+}
+
+.zone-grid {
+  background-image:
+    linear-gradient(var(--zone-grid, rgba(92, 221, 236, 0.04)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--zone-grid, rgba(92, 221, 236, 0.03)) 1px, transparent 1px);
+}
+
+.zone-contact {
+  background:
+    linear-gradient(180deg, var(--zone-panel-edge, rgba(202, 244, 249, 0.06)), transparent 28%),
+    color-mix(in srgb, var(--zone-accent-soft, rgba(104, 219, 232, 0.06)) 75%, rgba(255, 255, 255, 0.02));
+}
+
+@keyframes sonar-sweep {
+  from {
+    transform: translate(-50%, -100%) rotate(0deg);
+  }
+  to {
+    transform: translate(-50%, -100%) rotate(360deg);
+  }
+}
+
+@keyframes sonar-breathe {
+  0%,
+  100% {
+    opacity: 0.32;
+    transform: translate(-50%, -50%) scale(0.985);
+  }
+  50% {
+    opacity: 0.5;
+    transform: translate(-50%, -50%) scale(1.015);
+  }
+}
+
+@keyframes sonar-contact {
+  0%,
+  100% {
+    opacity: 0.72;
+    transform: scale(0.96);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.08);
+  }
+}
+
+@keyframes sonar-pulse-ring {
+  0% {
+    opacity: 0.28;
+    transform: translate(-50%, -50%) scale(0.22);
+  }
+  18% {
+    opacity: 0.24;
+  }
+  72% {
+    opacity: 0.1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(7.2);
+  }
+}
+
+.sonar-sweep {
+  animation: sonar-sweep 9.5s linear infinite;
+  will-change: transform;
+}
+
+.sonar-breathe {
+  animation: sonar-breathe 4.8s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.sonar-contact {
+  animation: sonar-contact 3.6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.sonar-pulse-ring {
+  animation: sonar-pulse-ring 10.5s linear infinite;
+  will-change: transform, opacity;
+}
+
+.sonar-contact-delay {
+  animation-delay: 1.2s;
+}
+
+.sonar-contact-delay-long {
+  animation-delay: 2.3s;
+}
+
+.soft-edge-light {
+  position: relative;
+}
+
+.soft-edge-light::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background:
+    linear-gradient(180deg, rgba(202, 244, 249, 0.08), transparent 22%),
+    radial-gradient(circle at top, rgba(115, 214, 227, 0.08), transparent 48%);
+  opacity: 0.75;
 }
 
 a {

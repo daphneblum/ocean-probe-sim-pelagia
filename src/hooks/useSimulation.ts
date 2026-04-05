@@ -1,5 +1,9 @@
 import { useEffect, useState } from "react";
-import { createInitialSnapshot, stepSimulation } from "@/simulation/engine";
+import {
+  advanceSensorPlayback,
+  createInitialSnapshot,
+  stepSimulation,
+} from "@/simulation/engine";
 import { SimulationAction, SimulationSnapshot } from "@/types/simulation";
 
 export function useSimulation() {
@@ -13,6 +17,19 @@ export function useSimulation() {
     }, 2800);
 
     return () => window.clearInterval(interval);
+  }, []);
+
+  useEffect(() => {
+    let frameId = 0;
+
+    const update = () => {
+      setSnapshot((current) => advanceSensorPlayback(current, Date.now()));
+      frameId = window.requestAnimationFrame(update);
+    };
+
+    frameId = window.requestAnimationFrame(update);
+
+    return () => window.cancelAnimationFrame(frameId);
   }, []);
 
   function dispatch(action: SimulationAction) {

@@ -7,8 +7,10 @@ import {
 } from "@/constants/simulation";
 import { ZONES } from "@/constants/zones";
 import {
+  DetectionKind,
   MissionLogEntry,
   ProbeState,
+  RadarDetection,
   SimulationAction,
   SimulationSnapshot,
   ZoneDefinition,
@@ -21,6 +23,10 @@ const RECOVERY_EXIT_THRESHOLD = 82;
 const SURFACE_DEPTH_THRESHOLD = 20;
 const AUTONOMY_IDLE_OVERHEAD = 0.04;
 const MANUAL_IDLE_OVERHEAD = 0.02;
+const DETECTION_RETENTION_TICKS = 7;
+const SWEEP_DURATION_MS = 18000;
+const DETECTION_VISIBLE_HOLD_MS = 650;
+const DETECTION_FADE_MS = 1100;
 
 const ACTION_ENERGY_COST: Record<
   Exclude<SimulationAction, "TOGGLE_AUTONOMY" | "TICK">,
@@ -96,6 +102,70 @@ function resolveSensorStatus(signalStrength: number, depth: number) {
 
 function deterministicDetection(zone: ZoneDefinition, tick: number) {
   return zone.detections[tick % zone.detections.length];
+}
+
+function inferDetectionKind(message: string): DetectionKind {
+  if (/reef|fish|plankton|migratory|bloom/i.test(message)) {
+    return "biological";
+  }
+
+  if (/contour|topography|thermocline|plain|ridge/i.test(message)) {
+    return "terrain";
+  }
+
+  if (/hull|cable|debris|wreckage|plume|fragmented/i.test(message)) {
+    return "debris";
+  }
+
+  return "unknown";
+}
+
+function createRadarDetection(
+  zone: ZoneDefinition,
+  tick: number,
+  label: string,
+  logId: string,
+): RadarDetection {
+  const baseIndex = tick % zone.detections.length;
+  const angle = (((tick * 47) + baseIndex * 83) % 360) * (Math.PI / 180);
+  const radius = 0.24 + (((tick + baseIndex) % 5) * 0.12);
+
+  return {
+    id: `${tick}-${zone.id}-${baseIndex}`,
+    tick,
+    angle: (angle * 180) / Math.PI,
+    radius,
+    x: 50 + Math.cos(angle) * radius * 50,
+    y: 50 + Math.sin(angle) * radius * 50,
+    kind: inferDetectionKind(label),
+    logId,
+    label,
+    revealed: false,
+  };
+}
+
+function pruneDetections(detections: RadarDetection[], tick: number) {
+  return detections.filter((detection) => tick - detection.tick <= DETECTION_RETENTION_TICKS);
+}
+
+function getSweepAngle(nowMs: number) {
+  return ((nowMs % SWEEP_DURATION_MS) / SWEEP_DURATION_MS) * 360;
+}
+
+function didSweepCrossAngle(
+  previousAngle: number,
+  currentAngle: number,
+  targetAngle: number,
+) {
+  const prev = ((previousAngle % 360) + 360) % 360;
+  const current = ((currentAngle % 360) + 360) % 360;
+  const target = ((targetAngle % 360) + 360) % 360;
+
+  if (prev <= current) {
+    return target > prev && target <= current;
+  }
+
+  return target > prev || target <= current;
 }
 
 function isAtSurface(depth: number) {
@@ -344,6 +414,8 @@ function getAutonomousAction(state: ProbeState): SimulationAction {
 }
 
 export function createInitialSnapshot(): SimulationSnapshot {
+  const nowMs = Date.now();
+
   return {
     state: INITIAL_PROBE_STATE,
     logs: [
@@ -353,7 +425,10 @@ export function createInitialSnapshot(): SimulationSnapshot {
         "Pelagia initialized. Vehicle stable and awaiting command.",
       ),
     ],
+    detections: [],
     disabledActions: [],
+    sweepAngle: getSweepAngle(nowMs),
+    sensorTimeMs: nowMs,
   };
 }
 
@@ -364,6 +439,7 @@ export function stepSimulation(
   let workingState = applyPassiveChanges(snapshot.state);
   const logs: MissionLogEntry[] = [];
   const disabledActions = getDisabledActions(workingState);
+  let detections = pruneDetections(snapshot.detections, workingState.tick);
 
   const chosenAction =
     requestedAction === "TICK" && workingState.autonomousMode
@@ -425,13 +501,16 @@ export function stepSimulation(
     }
 
     if (chosenAction === "SCAN") {
-      logs.push(
-        createLog(
-          workingState.tick,
-          "environment",
-          deterministicDetection(zone, workingState.tick),
-        ),
+      const detectionLabel = deterministicDetection(zone, workingState.tick);
+      const detectionLog = createLog(
+        workingState.tick,
+        "environment",
+        detectionLabel,
       );
+      detections = [
+        ...detections.filter((detection) => detection.revealed),
+        createRadarDetection(zone, workingState.tick, detectionLabel, detectionLog.id),
+      ];
     }
   }
 
@@ -559,11 +638,76 @@ export function stepSimulation(
   return {
     state: workingState,
     logs: appendLogs(snapshot.logs, [...logs, ...statusNotes]),
+    detections: pruneDetections(detections, workingState.tick),
     latestDetection:
-      chosenAction === "SCAN"
-        ? deterministicDetection(finalZone, workingState.tick)
-        : snapshot.latestDetection,
+      snapshot.latestDetection,
     recommendedAction: getRecommendedAction(workingState),
     disabledActions: getDisabledActions(workingState),
+    sweepAngle: snapshot.sweepAngle,
+    sensorTimeMs: snapshot.sensorTimeMs,
+  };
+}
+
+export function advanceSensorPlayback(
+  snapshot: SimulationSnapshot,
+  nowMs: number,
+): SimulationSnapshot {
+  const sweepAngle = getSweepAngle(nowMs);
+  let changed = false;
+  let latestDetection = snapshot.latestDetection;
+  let logs = snapshot.logs;
+
+  const detections = snapshot.detections
+    .map((detection) => {
+      if (
+        !detection.revealed &&
+        didSweepCrossAngle(snapshot.sweepAngle, sweepAngle, detection.angle)
+      ) {
+        changed = true;
+        latestDetection = detection.label;
+        logs = appendLogs(logs, [
+          {
+            id: detection.logId,
+            tick: detection.tick,
+            category: "environment",
+            message: detection.label,
+          },
+        ]);
+
+        return {
+          ...detection,
+          revealed: true,
+          revealedAtMs: nowMs,
+          expiresAtMs: nowMs + DETECTION_VISIBLE_HOLD_MS + DETECTION_FADE_MS,
+        };
+      }
+
+      return detection;
+    })
+    .filter((detection) => !detection.expiresAtMs || nowMs <= detection.expiresAtMs);
+
+  if (
+    !changed &&
+    detections.length === snapshot.detections.length &&
+    snapshot.sweepAngle === sweepAngle
+  ) {
+    if (snapshot.sensorTimeMs === nowMs) {
+      return snapshot;
+    }
+
+    return {
+      ...snapshot,
+      sweepAngle,
+      sensorTimeMs: nowMs,
+    };
+  }
+
+  return {
+    ...snapshot,
+    logs,
+    detections,
+    latestDetection,
+    sweepAngle,
+    sensorTimeMs: nowMs,
   };
 }

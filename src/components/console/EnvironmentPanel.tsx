@@ -1,13 +1,16 @@
 import { Panel } from "@/components/ui";
 import { ZONES } from "@/constants/zones";
+import { cn } from "@/lib/cn";
 import { ProbeState } from "@/types/simulation";
 
 export function EnvironmentPanel({
   state,
   latestDetection,
+  zoneThemeClass,
 }: {
   state: ProbeState;
   latestDetection?: string;
+  zoneThemeClass: string;
 }) {
   const activeZone = ZONES.find((zone) => zone.id === state.systems.currentZone)!;
 
@@ -15,9 +18,9 @@ export function EnvironmentPanel({
     <Panel
       title="Environment"
       subtitle="Current water mass, operating envelope, and latest contact."
-      className="h-full"
+      className={cn("zone-panel h-full", zoneThemeClass)}
     >
-      <div className="rounded-[1.3rem] border border-white/10 bg-[radial-gradient(circle_at_center,_rgba(54,192,220,0.12),_transparent_55%),rgba(255,255,255,0.03)] p-4">
+      <div className="zone-panel rounded-[1.3rem] border border-white/10 bg-[radial-gradient(circle_at_center,_var(--zone-accent-soft,_rgba(54,192,220,0.12)),_transparent_55%),rgba(255,255,255,0.03)] p-4">
         <p className="text-xs uppercase tracking-[0.32em] text-cyan-200/70">
           Active Zone
         </p>
@@ -29,7 +32,7 @@ export function EnvironmentPanel({
         </p>
       </div>
       <div className="mt-4 grid gap-3 grid-cols-3">
-        <div className="rounded-[1.15rem] border border-white/10 bg-white/5 px-3.5 py-3">
+        <div className="zone-panel rounded-[1.15rem] border border-white/10 bg-white/5 px-3.5 py-3">
           <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">
             Depth Band
           </p>
@@ -37,7 +40,7 @@ export function EnvironmentPanel({
             {activeZone.depthRange[0]}-{activeZone.depthRange[1]} m
           </p>
         </div>
-        <div className="rounded-[1.15rem] border border-white/10 bg-white/5 px-3.5 py-3">
+        <div className="zone-panel rounded-[1.15rem] border border-white/10 bg-white/5 px-3.5 py-3">
           <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">
             Local Drift
           </p>
@@ -45,7 +48,7 @@ export function EnvironmentPanel({
             {activeZone.currentDrift.toFixed(1)} kn est.
           </p>
         </div>
-        <div className="rounded-[1.15rem] border border-white/10 bg-white/5 px-3.5 py-3">
+        <div className="zone-panel rounded-[1.15rem] border border-white/10 bg-white/5 px-3.5 py-3">
           <p className="text-[11px] uppercase tracking-[0.24em] text-slate-400">
             Signal Modifier
           </p>
@@ -55,7 +58,7 @@ export function EnvironmentPanel({
           </p>
         </div>
       </div>
-      <div className="mt-4 rounded-[1.2rem] border border-cyan-300/20 bg-cyan-300/10 px-4 py-4">
+      <div className="zone-contact mt-4 rounded-[1.2rem] border border-cyan-300/20 px-4 py-4">
         <p className="text-xs uppercase tracking-[0.28em] text-cyan-100/70">
           Latest Contact
         </p>

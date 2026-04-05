@@ -41,7 +41,7 @@ export function Panel({
   return (
     <section
       className={cn(
-        "rounded-[1.6rem] border border-white/10 bg-slate-950/45 p-5 shadow-[0_20px_60px_rgba(0,0,0,0.28)] backdrop-blur-xl",
+        "panel-surface rounded-[1.6rem] border border-white/10 p-5 backdrop-blur-xl",
         className,
       )}
     >
@@ -76,7 +76,7 @@ export function StatPill({
         : "border-cyan-300/20 bg-cyan-300/10 text-cyan-50";
 
   return (
-    <div className={cn("rounded-[1.15rem] border px-4 py-3", toneClass)}>
+    <div className={cn("telemetry-tile rounded-[1.15rem] border px-4 py-3", toneClass)}>
       <p className="text-[11px] uppercase tracking-[0.28em] text-white/55">
         {label}
       </p>
