@@ -1,0 +1,103 @@
+@import url("https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=Manrope:wght@400;500;600;700;800&display=swap");
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Manrope", sans-serif;
+  --font-serif: "Instrument Serif", serif;
+}
+
+:root {
+  color-scheme: dark;
+  font-family: var(--font-sans);
+  background: #02060b;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  margin: 0;
+  min-width: 320px;
+  min-height: 100vh;
+  background: #02060b;
+}
+
+.ocean-contours {
+  background-image:
+    radial-gradient(
+      circle at 18% 22%,
+      transparent 0 7%,
+      rgba(120, 198, 220, 0.055) 7.4% 7.9%,
+      transparent 8.3% 12.8%,
+      rgba(120, 198, 220, 0.04) 13.2% 13.7%,
+      transparent 14.1% 20%
+    ),
+    radial-gradient(
+      circle at 78% 34%,
+      transparent 0 9%,
+      rgba(120, 198, 220, 0.045) 9.4% 9.9%,
+      transparent 10.3% 15.6%,
+      rgba(120, 198, 220, 0.035) 16% 16.5%,
+      transparent 16.9% 23%
+    ),
+    radial-gradient(
+      circle at 42% 78%,
+      transparent 0 8%,
+      rgba(120, 198, 220, 0.04) 8.4% 8.9%,
+      transparent 9.3% 14.5%,
+      rgba(120, 198, 220, 0.03) 14.9% 15.4%,
+      transparent 15.8% 22%
+    );
+  background-repeat: no-repeat;
+  background-size: 84rem 84rem, 72rem 72rem, 66rem 66rem;
+  background-position: -14rem -10rem, right -10rem top 4rem, center bottom -18rem;
+}
+
+.ocean-contours-panel {
+  position: relative;
+}
+
+.ocean-contours-panel::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  pointer-events: none;
+  background-image:
+    radial-gradient(
+      circle at 18% 32%,
+      transparent 0 13%,
+      rgba(126, 210, 228, 0.06) 13.4% 13.8%,
+      transparent 14.2% 19.2%,
+      rgba(126, 210, 228, 0.042) 19.6% 20%,
+      transparent 20.4% 26%
+    ),
+    radial-gradient(
+      circle at 82% 70%,
+      transparent 0 10%,
+      rgba(126, 210, 228, 0.05) 10.4% 10.8%,
+      transparent 11.2% 15.5%,
+      rgba(126, 210, 228, 0.035) 15.9% 16.3%,
+      transparent 16.7% 22%
+    );
+  background-repeat: no-repeat;
+  background-size: 30rem 30rem, 26rem 26rem;
+  background-position: left -8rem top -5rem, right -7rem bottom -6rem;
+  opacity: 0.42;
+  mix-blend-mode: screen;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  cursor: pointer;
+}
