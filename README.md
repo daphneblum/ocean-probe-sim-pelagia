@@ -2,6 +2,16 @@
 
 A polished multi-page React + TypeScript + Tailwind web app that presents a deep-sea research console for supervising an autonomous ocean probe. The experience is fully client-side and uses deterministic, rule-based simulation logic only.
 
+## Built with Codex
+
+This project was created as part of the Codex Creator Challenge using AI-assisted development.
+
+- Codex was used to scaffold and implement the application
+- I directed the system design, architecture, simulation behavior, and interface aesthetics
+- The project focuses on demonstrating how AI can be used as a tool to build thoughtful, structured, and interactive systems
+
+The goal was not just to generate code, but to design a believable simulation of an autonomous ocean probe with clear separation between interface and system logic.
+
 ## Features
 
 - Multi-page interface with route-level views for mission briefing, simulation console, and system overview
