@@ -3,7 +3,7 @@ import { ProbeState } from "@/types/simulation";
 export const MAX_DEPTH = 1800;
 export const MIN_DEPTH = 0;
 export const MAX_POSITION = 1000;
-export const LOG_LIMIT = 18;
+export const LOG_LIMIT = 16;
 
 export const INITIAL_PROBE_STATE: ProbeState = {
   tick: 0,

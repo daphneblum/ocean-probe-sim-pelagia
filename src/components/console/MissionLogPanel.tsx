@@ -15,14 +15,17 @@ export function MissionLogPanel({ logs }: { logs: MissionLogEntry[] }) {
     <Panel
       title="Mission Log"
       subtitle="Time-ordered vehicle and environment entries."
-      className="h-full"
+      className="flex h-full min-h-0 flex-col"
       headerRight={
         <div className="rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-[11px] uppercase tracking-[0.28em] text-slate-300">
           Live feed · {logs.length}
         </div>
       }
     >
-      <div className="max-h-[34rem] space-y-2 overflow-y-auto pr-1">
+      <div className="relative min-h-0 flex-1 overflow-hidden">
+        <div className="pointer-events-none absolute inset-x-0 top-0 z-10 h-5 bg-gradient-to-b from-slate-950/80 to-transparent" />
+        <div className="pointer-events-none absolute inset-x-0 bottom-0 z-10 h-6 bg-gradient-to-t from-slate-950/90 to-transparent" />
+        <div className="min-h-0 h-full space-y-2 overflow-y-auto pr-1">
         {logs
           .slice()
           .reverse()
@@ -80,6 +83,7 @@ export function MissionLogPanel({ logs }: { logs: MissionLogEntry[] }) {
               </div>
             );
           })}
+        </div>
       </div>
     </Panel>
   );

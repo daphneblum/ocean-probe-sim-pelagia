@@ -61,7 +61,7 @@ export function SimulationPage() {
         </div>
       </div>
 
-      <div className="grid gap-5 xl:grid-cols-[minmax(0,1.45fr)_minmax(21rem,0.9fr)]">
+      <div className="grid gap-5 xl:items-stretch xl:grid-cols-[minmax(0,1.45fr)_minmax(21rem,0.9fr)]">
         <div className="grid gap-5">
           <SonarDisplay
             state={snapshot.state}
@@ -88,7 +88,7 @@ export function SimulationPage() {
             recoveryState={snapshot.state.recoveryState}
           />
         </div>
-        <div className="min-h-0">
+        <div className="min-h-0 h-full xl:h-[calc(100vh-14rem)] xl:max-h-[calc(100vh-14rem)]">
           <MissionLogPanel logs={snapshot.logs} />
         </div>
       </div>
